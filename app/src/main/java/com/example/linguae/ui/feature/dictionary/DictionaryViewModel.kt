@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * View model for [DictionaryScreen]
+ * ViewModel for [DictionaryScreen]
  */
 @HiltViewModel
 class DictionaryViewModel @Inject constructor(
@@ -33,7 +33,13 @@ class DictionaryViewModel @Inject constructor(
     }
 
     /**
-     * Updates state
+     * Loads and observes vocabulary words for the current book. Automatically:
+     * - Triggers on ViewModel initialization
+     * - Updates state reactively when data changes
+     * - Manages loading states and error handling
+     *
+     * @throws IllegalArgumentException If no book ID exists in navigation arguments
+     * @throws NoSuchElementException If book isn't found (implementation-dependent)
      */
     fun updateState() {
         viewModelScope.launch {
@@ -52,7 +58,13 @@ class DictionaryViewModel @Inject constructor(
     }
 
     /**
-     * Delete a book word
+     * Removes a vocabulary word from persistent storage. Handles:
+     * - Loading state during deletion
+     * - Success/error feedback
+     * - Automatic list updates via [Flow] observation
+     *
+     * @param id UUID of the word to delete
+     * @throws NoSuchElementException If word doesn't exist (implementation-dependent)
      */
     fun deleteBookWord(id: String) {
         viewModelScope.launch {

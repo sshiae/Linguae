@@ -40,7 +40,14 @@ class BookReaderViewModel @Inject constructor(
         private set
 
     /**
-     * Updates state
+     * Loads book details and initializes screen state. Automatically triggered on ViewModel creation.
+     * Handles:
+     * - Book ID validation from navigation arguments
+     * - Book data loading
+     * - Loading state management
+     *
+     * @throws IllegalArgumentException If no book ID exists in navigation arguments
+     * @throws NoSuchElementException If book isn't found (implementation-dependent)
      */
     fun updateState() {
         viewModelScope.launch {
@@ -59,7 +66,13 @@ class BookReaderViewModel @Inject constructor(
     }
 
     /**
-     * Handle text selection
+     * Processes text selection for translation. Handles:
+     * - Translation API communication
+     * - Translation state updates
+     * - Error handling for translation failures
+     *
+     * @param text Non-empty selected text to translate
+     * @throws IllegalArgumentException If text is empty
      */
     fun handleTextSelection(
         text: String
@@ -81,7 +94,8 @@ class BookReaderViewModel @Inject constructor(
     }
 
     /**
-     * Clear translation
+     * Resets translation-related state to initial values.
+     * Clears both source text and translation results.
      */
     fun clearTranslation() {
         translationState = translationState.copy(
@@ -91,7 +105,15 @@ class BookReaderViewModel @Inject constructor(
     }
 
     /**
-     * Used to add current translation to dictionary
+     * Persists current translation as vocabulary entry. Requires:
+     * - Valid book context (loaded book)
+     * - Non-empty source text and translation
+     * Handles:
+     * - BookWord entity creation
+     * - Data layer persistence
+     * - Error handling for invalid state
+     *
+     * @throws IllegalStateException If no book is loaded or translation data is incomplete
      */
     fun addCurrentTranslationToDictionary() {
         viewModelScope.launch {

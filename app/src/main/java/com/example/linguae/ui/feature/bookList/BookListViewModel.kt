@@ -30,7 +30,16 @@ class BookListViewModel @Inject constructor(
     }
 
     /**
-     * Updates state
+     * Refreshes the book list from the data source and updates the UI state.
+     * Automatically handles loading states and error notifications.
+     *
+     * Triggers:
+     * 1. Initial load during ViewModel initialization
+     * 2. Manual refresh requests
+     *
+     * @throws Exception Propagates errors from data layer with messages:
+     *         - Network/database errors from [interactor.getBooks]
+     *         - Data parsing/validation failures
      */
     fun updateState() {
         viewModelScope.launch {
@@ -47,7 +56,15 @@ class BookListViewModel @Inject constructor(
     }
 
     /**
-     * Delete a book
+     * Deletes a book by its unique identifier. Handles:
+     * - Loading state management during operation
+     * - Success/error feedback
+     * - Automatic state updates through [Flow] observation
+     *
+     * @param id UUID of the book to remove
+     * @throws Exception Propagates deletion errors with messages:
+     *         - "Book not found" if invalid ID
+     *         - Permission/IO errors from [interactor.deleteBook]
      */
     fun deleteBook(id: String) {
         viewModelScope.launch {

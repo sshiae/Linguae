@@ -33,7 +33,11 @@ class AddBookViewModel @Inject constructor(
         private set
 
     /**
-     * Using for set selected pdf uri
+     * Updates the selected PDF URI and generates a thumbnail preview.
+     * Triggers asynchronous preview generation in the IO dispatcher context.
+     *
+     * @param uri Content URI of the selected PDF file.
+     * @throws SecurityException If URI access permission isn't granted (implementation-dependent).
      */
     fun setSelectedPdfUri(uri: Uri) {
         state = state.copy(
@@ -51,7 +55,18 @@ class AddBookViewModel @Inject constructor(
     }
 
     /**
-     * Save a book
+     * Saves a new book with PDF processing and validation. Handles:
+     * - Input validation (title + PDF selection)
+     * - PDF and preview persistence
+     * - Book metadata storage
+     * - Loading state management
+     *
+     * @param title Non-nullable book title (user input)
+     * @throws Exception Propagates errors with user-friendly messages:
+     *         - "Введите название" if title is null/empty
+     *         - "Выберите файл" if no PDF selected
+     *         - File system errors from [pdfHandler]
+     *         - Network/database errors from [interactor]
      */
     fun saveBook(title: String?) {
         viewModelScope.launch {
