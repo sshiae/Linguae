@@ -18,8 +18,9 @@ import javax.inject.Inject
 @HiltViewModel
 class DictionaryViewModel @Inject constructor(
     private val interactor: Interactor,
-    private val stateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {
+    val bookId: String = checkNotNull(savedStateHandle[NavigationKeys.Arg.BOOK_ID])
 
     var state by mutableStateOf(
         DictionaryContract.State(
@@ -45,9 +46,7 @@ class DictionaryViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 showLoading()
-                val itemId = stateHandle.get<String>(NavigationKeys.Arg.BOOK_ID)
-                    ?: throw IllegalArgumentException("No book id was passed to destination.")
-                interactor.getWordsForBook(itemId).collect { wordList ->
+                interactor.getWordsForBook(bookId).collect { wordList ->
                     state = state.copy(words = wordList)
                     hideLoading()
                 }

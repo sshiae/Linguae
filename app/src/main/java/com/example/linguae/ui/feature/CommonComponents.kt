@@ -35,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,7 +48,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.linguae.R
+import com.example.linguae.domain.model.Book
 import com.example.linguae.ui.theme.White80
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Composable
@@ -214,12 +218,23 @@ fun ErrorAlertDialog(
 @Composable
 fun Button(
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     text: String,
     onClick: () -> Unit
 ) {
+    val delayMillis: Long = 2000
+    var delayed by remember { mutableStateOf(true) }
+    val scope = rememberCoroutineScope()
     Button(
         onClick = {
-            onClick()
+            if (delayed) {
+                delayed = false
+                scope.launch {
+                    delay(delayMillis)
+                    delayed = true
+                }
+                onClick()
+            }
         },
         shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.buttonColors(
@@ -229,9 +244,10 @@ fun Button(
         modifier = modifier
             .fillMaxWidth(0.8f)
             .height(56.dp),
+        enabled = enabled
     ) {
         Text(
-            text = text,
+            text = if (delayed) text else "Подождите...",
             color = Color.White,
             style = MaterialTheme.typography.bodyLarge.copy(color = White80),
             overflow = TextOverflow.Ellipsis

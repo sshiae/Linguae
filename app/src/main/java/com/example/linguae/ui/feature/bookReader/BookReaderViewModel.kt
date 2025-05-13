@@ -85,8 +85,8 @@ class BookReaderViewModel @Inject constructor(
                     translation = response,
                     text = text
                 )
-            } catch (e: Exception) {
-                showErrorMessage(e.message)
+            } catch (_: Exception) {
+                showErrorMessage("Для работы переводчика необходимо подключение к интернету!")
             } finally {
                 hideLoading()
             }

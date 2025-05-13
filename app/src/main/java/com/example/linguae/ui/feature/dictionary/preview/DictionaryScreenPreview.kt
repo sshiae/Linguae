@@ -34,7 +34,9 @@ fun DictionaryScreenPreview() {
             onDelete = {},
             errorMessageState = null,
             onClearError = {},
-            loadingState = false
+            loadingState = false,
+            onStartLearning = { _ -> },
+            bookId = generateUUID()
         )
     }
 }

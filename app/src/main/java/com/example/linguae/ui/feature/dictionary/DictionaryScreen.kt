@@ -17,7 +17,9 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Book
+import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Translate
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,7 +39,8 @@ import java.util.concurrent.TimeUnit
 
 @Composable
 fun DictionaryScreen(
-    viewModel: DictionaryViewModel = hiltViewModel()
+    viewModel: DictionaryViewModel = hiltViewModel(),
+    onStartLearning: (String) -> Unit
 ) {
     LaunchedEffect(Unit) {
         viewModel.updateState()
@@ -45,6 +48,7 @@ fun DictionaryScreen(
 
     DictionaryScreen(
         state = viewModel.state,
+        bookId = viewModel.bookId,
         onDelete = { id ->
             viewModel.deleteBookWord(id)
         },
@@ -52,7 +56,8 @@ fun DictionaryScreen(
         onClearError = {
             viewModel.clearError()
         },
-        loadingState = viewModel.loadingState
+        loadingState = viewModel.loadingState,
+        onStartLearning = onStartLearning
     )
 }
 
@@ -60,10 +65,12 @@ fun DictionaryScreen(
 @Composable
 fun DictionaryScreen(
     state: DictionaryContract.State,
+    bookId: String,
     onDelete: (String) -> Unit,
     errorMessageState: String?,
     onClearError: () -> Unit,
-    loadingState: Boolean
+    loadingState: Boolean,
+    onStartLearning: (String) -> Unit
 ) {
     val words: List<BookWord> = state.words
 
@@ -110,6 +117,19 @@ fun DictionaryScreen(
             ErrorAlertDialog(
                 text = errorMessage,
                 onDismiss = onClearError
+            )
+        }
+
+        if (words.isNotEmpty()) {
+            ExtendedFloatingActionButton(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
+                onClick = {
+                    onStartLearning(bookId)
+                },
+                icon = { Icon(Icons.Filled.School, "Learn") },
+                text = { Text("Изучать") }
             )
         }
     }

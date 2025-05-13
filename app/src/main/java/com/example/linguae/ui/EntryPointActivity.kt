@@ -14,11 +14,13 @@ import com.example.linguae.ui.NavigationKeys.Arg.BOOK_ID
 import com.example.linguae.ui.NavigationKeys.Route.ADD_BOOK
 import com.example.linguae.ui.NavigationKeys.Route.BOOK_LIST
 import com.example.linguae.ui.NavigationKeys.Route.DICTIONARY
+import com.example.linguae.ui.NavigationKeys.Route.QUIZ
 import com.example.linguae.ui.NavigationKeys.Route.WELCOME
 import com.example.linguae.ui.feature.addBook.AddBookScreen
 import com.example.linguae.ui.feature.bookList.BookListScreen
 import com.example.linguae.ui.feature.bookReader.BookReaderScreen
 import com.example.linguae.ui.feature.dictionary.DictionaryScreen
+import com.example.linguae.ui.feature.quiz.QuizScreen
 import com.example.linguae.ui.feature.welcome.WelcomeScreen
 import com.example.linguae.ui.theme.LinguaeTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -70,6 +72,16 @@ private fun LinguaeApp() {
             )
         ) {
             DictionaryDestination(navController)
+        }
+        composable(
+            route = "$QUIZ/{$BOOK_ID}",
+            arguments = listOf(
+                navArgument(BOOK_ID) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            QuizDestination(navController)
         }
     }
 }
@@ -125,7 +137,22 @@ fun BookAddDestination(
 fun DictionaryDestination(
     navController: NavHostController
 ) {
-    DictionaryScreen()
+    DictionaryScreen(
+        onStartLearning = { bookId ->
+            navController.navigate("$QUIZ/$bookId")
+        }
+    )
+}
+
+@Composable
+fun QuizDestination(
+    navController: NavHostController
+) {
+    QuizScreen(
+        onFinish = {
+            navController.popBackStack()
+        }
+    )
 }
 
 object NavigationKeys {
@@ -138,5 +165,6 @@ object NavigationKeys {
         const val BOOK_LIST = "book_list"
         const val ADD_BOOK = "add_book"
         const val DICTIONARY = "dictionary"
+        const val QUIZ = "quiz"
     }
 }
